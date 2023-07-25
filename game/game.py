@@ -33,16 +33,11 @@ class HangmanGame:
 
         check_word = ["-" for x in range(len(word))]
 
-        # choice for user
-        sample = []
-        for i in random_word:
-            sample.append(i)
-
         word_label = Label(self.main_window, text=check_word,
                            font=("comicsans", 50, "bold"))
         word_label.grid(row=0, column=1)
 
-        def hi():
+        def hi(event):
             temp = check_alp.get()
             if len(temp) > 1:
                 tmsg.showerror(
@@ -52,9 +47,11 @@ class HangmanGame:
                     "Error", "Please provide an Alphabet", parent=self.main_window)
             else:
                 if temp.capitalize() in random_word:
-                    ind = random_word.index(temp.capitalize())
-                    check_word.pop(ind)
-                    check_word.insert(ind, temp.capitalize())
+                    indices = [i for i, letter in enumerate(
+                        random_word) if letter == temp.capitalize()]
+                    for ind in indices:
+                        check_word.pop(ind)
+                        check_word.insert(ind, temp.capitalize())
                     word_label.configure(text=check_word)
                     self.response_label.configure(
                         text="  Right Guess   ", fg="green")
@@ -84,8 +81,13 @@ class HangmanGame:
         Label(self.main_window, text="   Type an Alphabet:", font=(
             "comicsans", 40, "bold")).grid(row=3, columnspan=2)
 
+        # 创建Entry组件
         alp = StringVar()
         check_alp = Entry(self.main_window, bg="cyan", textvariable=alp)
         check_alp.grid(row=3, column=3)
+        check_alp.bind('<Return>', hi)
+
+        # 设置光标自动定位到Entry组件
+        check_alp.focus()
 
         self.main_window.mainloop()
